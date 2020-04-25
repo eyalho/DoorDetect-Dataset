@@ -28,9 +28,7 @@ with open("annotations.txt", "w") as fw:
             image_path = os.path.join("images", image_filename)
 
         if os.path.exists(image_path) is False:
-
-            continue
-            # raise BaseException(f"NOT FOUND PNG OR JPG MATCH TO {label}")
+            raise BaseException(f"NOT FOUND PNG OR JPG MATCH TO {label}")
 
         im = Image.open(image_path)
         width, height = im.size
@@ -41,13 +39,7 @@ with open("annotations.txt", "w") as fw:
             for line in fr:
                 idx = int(line[0])
                 # if not door delete:
-                if idx != 0:
-                    try:
-                        os.remove(image_path)
-                        os.remove(os.path.join(labels_folder, label))
-                    except Exception as e:
-                        print(e)
-                else:
+                if idx == 0:
                     str_yolo_door = line[2:]
                     list_yolo_door = str_yolo_door.strip('\n').split(" ")
                     x_center = float(list_yolo_door[0])
@@ -66,3 +58,10 @@ with open("annotations.txt", "w") as fw:
             if len(doors) > 0:
                 doors_formatted_str = str(doors)[1:-1]
                 fw.write(f"{image_filename}:{doors_formatted_str}\n")
+            else:
+                print(f"{image_filename} - no doors")
+                try:
+                    os.remove(image_path)
+                    os.remove(os.path.join(labels_folder, label))
+                except Exception as e:
+                    print(e)
