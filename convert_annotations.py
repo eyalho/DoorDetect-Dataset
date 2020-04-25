@@ -2,6 +2,8 @@ import os
 
 from PIL import Image
 
+c = 0
+
 labels_folder = "labels"
 labels = os.listdir(labels_folder)
 
@@ -26,12 +28,15 @@ with open("annotations.txt", "w") as fw:
             image_path = os.path.join("images", image_filename)
 
         if os.path.exists(image_path) is False:
+
             continue
             # raise BaseException(f"NOT FOUND PNG OR JPG MATCH TO {label}")
 
         im = Image.open(image_path)
         width, height = im.size
         with open(os.path.join(labels_folder, label), "r") as fr:
+            c+=1
+            print(c)
             doors = []
             for line in fr:
                 idx = int(line[0])
@@ -39,8 +44,9 @@ with open("annotations.txt", "w") as fw:
                 if idx != 0:
                     try:
                         os.remove(image_path)
-                    except:
-                        pass
+                        os.remove(os.path.join(labels_folder, label))
+                    except Exception as e:
+                        print(e)
                 else:
                     str_yolo_door = line[2:]
                     list_yolo_door = str_yolo_door.strip('\n').split(" ")
